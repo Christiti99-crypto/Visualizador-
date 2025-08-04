@@ -143,6 +143,11 @@
             transition: all 0.3s ease;
         }
 
+        select[multiple] {
+            min-height: 120px; /* Adjust height for multiple selection */
+            overflow-y: auto;
+        }
+
         select {
             background: white;
             min-width: 200px;
@@ -416,10 +421,9 @@
                 if (data.length > 0) {
                     Object.keys(data[0]).forEach(key => availableVariables.add(key));
                     data.forEach(row => {
-                        if (row.gad !== undefined && row.gad !== null && row.gad.toString().trim() !== '') {
-                            availableGads.add(row.gad.toString().trim());
-                        } else if (row.GAD !== undefined && row.GAD !== null && row.GAD.toString().trim() !== '') {
-                            availableGads.add(row.GAD.toString().trim());
+                        const gadValue = row.gad || row.GAD; // Check both 'gad' and 'GAD'
+                        if (gadValue !== undefined && gadValue !== null && gadValue.toString().trim() !== '') {
+                            availableGads.add(gadValue.toString().trim());
                         }
                     });
                 }
@@ -472,16 +476,15 @@
             const select = document.getElementById('variableSelect');
             select.innerHTML = ''; // Clear previous options
             
+            // Filter out internal/unnecessary variables and 'gad' itself
             const filteredVariables = Array.from(availableVariables).filter(variable => 
                 variable.toLowerCase() !== '__rownum__' && 
-                variable.toLowerCase() !== 'gad' && // Exclude 'gad' from variable selection
-                variable.toLowerCase() !== 'id_gad' && // Exclude 'id_gad' if it's an alternative to gad
-                variable.trim() !== '' &&
-                !variable.startsWith('__') && // Exclude internal ExcelJS properties
-                !variable.startsWith('!') // Exclude internal ExcelJS properties
+                variable.toLowerCase() !== 'gad' &&
+                variable.toLowerCase() !== 'id_gad' &&
+                !variable.startsWith('__') && 
+                !variable.startsWith('!') 
             ).sort(); // Sort variables alphabetically
 
-            // Add an informative default option if nothing is selected initially
             if (filteredVariables.length === 0) {
                  const option = document.createElement('option');
                  option.value = "";
@@ -509,9 +512,9 @@
                 const data = dataStore[scenario][datasetSize];
                 if (data) {
                     data.forEach(row => {
-                        const gad = row.gad || row.GAD;
-                        if (gad !== undefined && gad !== null && gad.toString().trim() !== '') {
-                            gadsForCurrentSize.add(gad.toString().trim());
+                        const gadValue = row.gad || row.GAD; // Check both 'gad' and 'GAD'
+                        if (gadValue !== undefined && gadValue !== null && gadValue.toString().trim() !== '') {
+                            gadsForCurrentSize.add(gadValue.toString().trim());
                         }
                     });
                 }
@@ -537,10 +540,12 @@
 
         function checkIfReadyToGenerate() {
             const selectedGad = document.getElementById('gadSelect').value;
+            // Get all selected options from the multiple select
             const selectedVariables = Array.from(document.getElementById('variableSelect').selectedOptions).map(option => option.value);
             const hasAnyDataLoaded = Object.values(dataStore).some(scenario => Object.values(scenario).some(data => data !== null && data.length > 0));
 
             const button = document.getElementById('generateComparison');
+            // Button is enabled if data is loaded, a GAD is selected, AND at least one variable is selected
             button.disabled = !hasAnyDataLoaded || !selectedGad || selectedVariables.length === 0;
             
             if (button.disabled) {
@@ -552,6 +557,7 @@
 
         function generateComparativeTable() {
             const selectedGad = document.getElementById('gadSelect').value;
+            // Get all selected options from the multiple select
             const selectedVariables = Array.from(document.getElementById('variableSelect').selectedOptions).map(option => option.value);
             const datasetSize = document.getElementById('datasetSize').value;
             const tableContainer = document.getElementById('comparisonTable');
@@ -575,7 +581,9 @@
             const headerRow = thead.insertRow();
             headerRow.insertCell().textContent = 'Escenario';
             selectedVariables.forEach(variable => {
-                headerRow.insertCell().textContent = variable;
+                const th = document.createElement('th');
+                th.textContent = variable;
+                headerRow.appendChild(th);
             });
 
             // Create table body
@@ -585,26 +593,27 @@
 
             scenarios.forEach((scenarioKey, index) => {
                 const data = dataStore[scenarioKey][datasetSize];
+                const row = tbody.insertRow();
+                row.insertCell().textContent = scenarioNames[index]; // First cell for Scenario Name
+
                 if (data && data.length > 0) {
                     // Find the row corresponding to the selected GAD
-                    const gadData = data.find(row => (row.gad || row.GAD)?.toString().trim() === selectedGad);
-
-                    const row = tbody.insertRow();
-                    row.insertCell().textContent = scenarioNames[index];
+                    const gadData = data.find(row => {
+                        const gadValue = row.gad || row.GAD; // Check both 'gad' and 'GAD'
+                        return gadValue?.toString().trim() === selectedGad;
+                    });
 
                     selectedVariables.forEach(variable => {
                         const cell = row.insertCell();
-                        if (gadData && gadData[variable] !== undefined && gadData[variable] !== null) {
+                        if (gadData && gadData.hasOwnProperty(variable) && gadData[variable] !== null && gadData[variable] !== undefined) {
                             // Format numbers to 2 decimal places if they are numeric
                             const value = parseFloat(gadData[variable]);
                             cell.textContent = isNaN(value) ? gadData[variable] : value.toFixed(2);
                         } else {
-                            cell.textContent = 'N/A'; // Not available
+                            cell.textContent = 'N/A'; // Not available or not found for this GAD
                         }
                     });
                 } else {
-                    const row = tbody.insertRow();
-                    row.insertCell().textContent = scenarioNames[index];
                     selectedVariables.forEach(() => {
                         const cell = row.insertCell();
                         cell.textContent = 'No hay datos cargados';
