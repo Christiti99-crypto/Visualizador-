@@ -51,7 +51,7 @@
             -webkit-text-fill-color: #666;
         }
 
-        .upload-section {
+        .status-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
@@ -67,10 +67,19 @@
             transition: all 0.3s ease;
         }
 
-        .scenario:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+        .scenario.loaded {
+            border-color: #4CAF50;
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.2);
+        }
+
+        .scenario.loading {
+            border-color: #FF9800;
+            box-shadow: 0 15px 35px rgba(255, 152, 0, 0.2);
+        }
+
+        .scenario.error {
+            border-color: #f44336;
+            box-shadow: 0 15px 35px rgba(244, 67, 54, 0.2);
         }
 
         .scenario h3 {
@@ -80,36 +89,10 @@
             font-weight: 600;
         }
 
-        .file-upload {
-            margin-bottom: 15px;
-        }
-
-        .file-upload label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .file-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px dashed #ddd;
-            border-radius: 10px;
-            background: #f9f9f9;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .file-input:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
-
         .file-status {
-            margin-top: 8px;
-            padding: 8px 12px;
-            border-radius: 6px;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 0.9rem;
             font-weight: 500;
         }
@@ -118,6 +101,18 @@
             background: #e7f5e7;
             color: #2d7d2d;
             border: 1px solid #b3d9b3;
+        }
+
+        .file-loading {
+            background: #fff3e0;
+            color: #f57c00;
+            border: 1px solid #ffcc02;
+        }
+
+        .file-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
         }
 
         .controls {
@@ -182,6 +177,21 @@
             box-shadow: none;
         }
 
+        .size-indicator {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .size-indicator h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
         .visualization {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -215,55 +225,28 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px;
+        .hidden {
+            display: none;
         }
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .size-indicator {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        .size-indicator h3 {
-            margin: 0;
-            font-size: 1.3rem;
-        }
-
-        .loading {
+        .loading-indicator {
             text-align: center;
             padding: 40px;
             color: #667eea;
             font-size: 1.1rem;
         }
 
+        .refresh-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            margin-left: 10px;
+        }
+
         @media (max-width: 768px) {
-            .upload-section {
+            .status-section {
                 grid-template-columns: 1fr;
             }
             
@@ -282,49 +265,37 @@
     <div class="container">
         <div class="header">
             <h1>Visualizador de Comparación de Escenarios</h1>
-            <p>Compara datos entre Original, Factor de Corrección + Original, y FC + Función</p>
+            <p>Datos automáticos desde repositorio GitHub - Original, Factor de Corrección + Original, y FC + Función</p>
         </div>
 
-        <div class="upload-section">
-            <div class="scenario">
+        <div class="status-section">
+            <div class="scenario" id="scenario-original">
                 <h3>📊 Escenario 1: Original</h3>
-                <div class="file-upload">
-                    <label>Excel 244 filas:</label>
-                    <input type="file" class="file-input" accept=".xlsx,.xls" data-scenario="original" data-size="244">
-                    <div class="file-status hidden"></div>
+                <div class="file-status" id="status-original-244">
+                    📂 BDD 244 filas: Cargando...
                 </div>
-                <div class="file-upload">
-                    <label>Excel 3172 filas:</label>
-                    <input type="file" class="file-input" accept=".xlsx,.xls" data-scenario="original" data-size="3172">
-                    <div class="file-status hidden"></div>
+                <div class="file-status" id="status-original-3172">
+                    📂 BDD 3172 filas: Cargando...
                 </div>
             </div>
 
-            <div class="scenario">
+            <div class="scenario" id="scenario-fc-original">
                 <h3>🔧 Escenario 2: Factor de Corrección + Original</h3>
-                <div class="file-upload">
-                    <label>Excel 244 filas:</label>
-                    <input type="file" class="file-input" accept=".xlsx,.xls" data-scenario="fc_original" data-size="244">
-                    <div class="file-status hidden"></div>
+                <div class="file-status" id="status-fc-original-244">
+                    📂 BDD 244 filas: Cargando...
                 </div>
-                <div class="file-upload">
-                    <label>Excel 3172 filas:</label>
-                    <input type="file" class="file-input" accept=".xlsx,.xls" data-scenario="fc_original" data-size="3172">
-                    <div class="file-status hidden"></div>
+                <div class="file-status" id="status-fc-original-3172">
+                    📂 BDD 3172 filas: Cargando...
                 </div>
             </div>
 
-            <div class="scenario">
+            <div class="scenario" id="scenario-fc-function">
                 <h3>⚡ Escenario 3: FC + Función</h3>
-                <div class="file-upload">
-                    <label>Excel 244 filas:</label>
-                    <input type="file" class="file-input" accept=".xlsx,.xls" data-scenario="fc_function" data-size="244">
-                    <div class="file-status hidden"></div>
+                <div class="file-status" id="status-fc-function-244">
+                    📂 BDD 244 filas: Cargando...
                 </div>
-                <div class="file-upload">
-                    <label>Excel 3172 filas:</label>
-                    <input type="file" class="file-input" accept=".xlsx,.xls" data-scenario="fc_function" data-size="3172">
-                    <div class="file-status hidden"></div>
+                <div class="file-status" id="status-fc-function-3172">
+                    📂 BDD 3172 filas: Cargando...
                 </div>
             </div>
         </div>
@@ -345,6 +316,7 @@
                     <option value="3172">Archivos de 3172 filas</option>
                 </select>
                 <button id="generateCharts" disabled>Generar Comparación</button>
+                <button id="refreshData" class="refresh-btn">🔄 Recargar Datos</button>
             </div>
         </div>
 
@@ -377,6 +349,22 @@
     </div>
 
     <script>
+        // Configuración de rutas de archivos en el repositorio
+        const FILE_PATHS = {
+            original: {
+                244: 'BDD/Escenario Original/Data_VP_Original.xlsx',
+                3172: 'BDD/Escenario Original/Data_larga_VP.xlsx'
+            },
+            fc_original: {
+                244: 'BDD/Escenario FC + Original/Data_VP_FC_Original.xlsx',
+                3172: 'BDD/Escenario FC + Original/Data_larga_VP_FC_Original.xlsx'
+            },
+            fc_function: {
+                244: 'BDD/Escenario FC + Funcion VP/Data_Valor_Presente_FC_Funcion.xlsx',
+                3172: 'BDD/Escenario FC + Funcion VP/Data_VP_FC_Funcion.xlsx'
+            }
+        };
+
         // Variables globales para almacenar los datos
         let dataStore = {
             original: { 244: null, 3172: null },
@@ -387,71 +375,105 @@
         let availableVariables = new Set();
         let charts = { chart1: null, chart2: null, chart3: null };
 
-        // Configurar event listeners para los archivos
-        document.querySelectorAll('.file-input').forEach(input => {
-            input.addEventListener('change', handleFileUpload);
-        });
-
+        // Configurar event listeners
         document.getElementById('generateCharts').addEventListener('click', generateComparison);
         document.getElementById('datasetSize').addEventListener('change', updateDatasetTitle);
+        document.getElementById('refreshData').addEventListener('click', loadAllData);
 
-        function updateDatasetTitle() {
-            const size = document.getElementById('datasetSize').value;
-            const title = document.getElementById('currentDatasetTitle');
-            title.textContent = `Comparación - Archivos de ${size} filas`;
+        // Cargar datos automáticamente al iniciar
+        window.addEventListener('load', loadAllData);
+
+        async function loadAllData() {
+            console.log('Iniciando carga de datos...');
+            
+            // Resetear estado
+            availableVariables.clear();
+            updateAllScenariosStatus('loading');
+            
+            const loadPromises = [];
+            
+            // Cargar todos los archivos
+            for (const [scenario, files] of Object.entries(FILE_PATHS)) {
+                for (const [size, path] of Object.entries(files)) {
+                    loadPromises.push(loadFile(scenario, size, path));
+                }
+            }
+            
+            // Esperar a que todos los archivos se carguen
+            await Promise.allSettled(loadPromises);
+            
+            // Actualizar interfaz
+            updateVariableSelect();
+            checkIfReadyToGenerate();
         }
 
-        async function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const scenario = event.target.dataset.scenario;
-            const size = event.target.dataset.size;
-            const statusDiv = event.target.nextElementSibling;
-
+        async function loadFile(scenario, size, path) {
+            const statusId = `status-${scenario.replace('_', '-')}-${size}`;
+            const statusElement = document.getElementById(statusId);
+            
             try {
-                statusDiv.textContent = 'Cargando...';
-                statusDiv.className = 'file-status';
-                statusDiv.classList.remove('hidden');
-
-                const data = await readExcelFile(file);
+                updateFileStatus(statusId, 'loading', `📂 BDD ${size} filas: Cargando...`);
+                
+                console.log(`Cargando: ${path}`);
+                
+                // Intentar cargar el archivo desde GitHub Pages
+                const response = await fetch(path);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                const data = readExcelFromBuffer(arrayBuffer);
+                
                 dataStore[scenario][size] = data;
-
+                
                 // Actualizar variables disponibles
                 if (data.length > 0) {
                     Object.keys(data[0]).forEach(key => availableVariables.add(key));
-                    updateVariableSelect();
                 }
-
-                statusDiv.textContent = `✓ Cargado: ${data.length} filas`;
-                statusDiv.className = 'file-status file-loaded';
-
-                checkIfReadyToGenerate();
-
+                
+                updateFileStatus(statusId, 'loaded', `✅ BDD ${size} filas: ${data.length} registros cargados`);
+                updateScenarioStatus(scenario, 'loaded');
+                
+                console.log(`✅ Cargado exitosamente: ${path} (${data.length} registros)`);
+                
             } catch (error) {
-                statusDiv.textContent = `❌ Error: ${error.message}`;
-                statusDiv.className = 'file-status';
-                statusDiv.style.background = '#ffe7e7';
-                statusDiv.style.color = '#d32f2f';
+                console.error(`❌ Error cargando ${path}:`, error);
+                updateFileStatus(statusId, 'error', `❌ BDD ${size} filas: Error - ${error.message}`);
+                updateScenarioStatus(scenario, 'error');
             }
         }
 
-        async function readExcelFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-                        resolve(jsonData);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                reader.onerror = () => reject(new Error('Error al leer el archivo'));
-                reader.readAsArrayBuffer(file);
+        function readExcelFromBuffer(arrayBuffer) {
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            return XLSX.utils.sheet_to_json(firstSheet);
+        }
+
+        function updateFileStatus(statusId, type, message) {
+            const element = document.getElementById(statusId);
+            if (element) {
+                element.textContent = message;
+                element.className = `file-status file-${type}`;
+            }
+        }
+
+        function updateScenarioStatus(scenario, status) {
+            const scenarioElement = document.getElementById(`scenario-${scenario.replace('_', '-')}`);
+            if (scenarioElement) {
+                scenarioElement.classList.remove('loading', 'loaded', 'error');
+                scenarioElement.classList.add(status);
+            }
+        }
+
+        function updateAllScenariosStatus(status) {
+            ['original', 'fc-original', 'fc-function'].forEach(scenario => {
+                const element = document.getElementById(`scenario-${scenario}`);
+                if (element) {
+                    element.classList.remove('loading', 'loaded', 'error');
+                    element.classList.add(status);
+                }
             });
         }
 
@@ -459,12 +481,20 @@
             const select = document.getElementById('variableSelect');
             select.innerHTML = '<option value="">Selecciona una variable para comparar</option>';
             
-            availableVariables.forEach(variable => {
+            // Filtrar variables que no sean útiles para visualización
+            const filteredVariables = Array.from(availableVariables).filter(variable => 
+                variable.toLowerCase() !== '__rownum__' && 
+                variable.trim() !== ''
+            );
+            
+            filteredVariables.forEach(variable => {
                 const option = document.createElement('option');
                 option.value = variable;
                 option.textContent = variable;
                 select.appendChild(option);
             });
+            
+            console.log(`Variables disponibles: ${filteredVariables.join(', ')}`);
         }
 
         function checkIfReadyToGenerate() {
@@ -473,6 +503,10 @@
             );
             
             document.getElementById('generateCharts').disabled = !hasAnyData;
+            
+            if (hasAnyData) {
+                console.log('✅ Datos listos para visualización');
+            }
         }
 
         function updateDatasetTitle() {
@@ -490,6 +524,8 @@
                 alert('Por favor selecciona una variable para comparar');
                 return;
             }
+
+            console.log(`Generando comparación: ${selectedVariable} (${datasetSize} filas)`);
 
             // Mostrar área de visualización
             document.getElementById('visualizationArea').classList.remove('hidden');
@@ -514,8 +550,9 @@
 
             const data = dataStore[scenario][datasetSize];
 
-            if (!data) {
+            if (!data || data.length === 0) {
                 // Mostrar mensaje de no data disponible
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.fillStyle = '#f0f0f0';
                 ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.fillStyle = '#666';
@@ -526,18 +563,23 @@
             }
 
             // Filtrar datos y usar la columna 'gad' como etiquetas
-            const filteredData = data.filter(row => 
-                row[variable] !== undefined && 
-                row[variable] !== null && 
-                !isNaN(row[variable]) && 
-                row.gad !== undefined && 
-                row.gad !== null
-            );
+            const filteredData = data.filter(row => {
+                const value = row[variable];
+                const gad = row.gad || row.GAD;
+                return value !== undefined && 
+                       value !== null && 
+                       !isNaN(value) && 
+                       gad !== undefined && 
+                       gad !== null;
+            });
 
             // Limitar a primeros 20 registros para mejor legibilidad
             const displayData = filteredData.slice(0, 20);
             
-            const labels = displayData.map(row => row.gad || `Registro ${displayData.indexOf(row) + 1}`);
+            const labels = displayData.map(row => {
+                const gad = row.gad || row.GAD || `Registro ${displayData.indexOf(row) + 1}`;
+                return gad.toString().substring(0, 15); // Limitar longitud de etiquetas
+            });
             const values = displayData.map(row => parseFloat(row[variable]));
 
             const config = {
@@ -605,7 +647,7 @@
             scenarios.forEach((scenario, index) => {
                 const data = dataStore[scenario][datasetSize];
 
-                if (data) {
+                if (data && data.length > 0) {
                     const values = data.map(row => row[variable]).filter(val => val !== undefined && val !== null && !isNaN(val));
                     const stats = calculateStats(values);
                     
@@ -670,32 +712,6 @@
                 max: Math.max(...values).toFixed(2),
                 count: values.length
             };
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 768px) {
-            .upload-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .visualization {
-                grid-template-columns: 1fr;
-            }
-            
-            .control-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
         }
     </script>
 </body>
