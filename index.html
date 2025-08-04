@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador de Estadísticas de Escenarios</title>
+    <title>Comparador de Estadísticas VP - GAD vs vp10_25</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -120,6 +120,7 @@
             padding: 25px;
             margin-bottom: 30px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
         }
 
         .controls h3 {
@@ -128,38 +129,12 @@
             font-size: 1.2rem;
         }
 
-        .control-group {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        select, button {
+        button {
             padding: 12px 20px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s ease;
-        }
-
-        select[multiple] {
-            min-height: 120px; /* Adjust height for multiple selection */
-            overflow-y: auto;
-        }
-
-        select {
-            background: white;
-            min-width: 200px;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        button {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -167,6 +142,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin: 0 10px;
         }
 
         button:hover {
@@ -181,7 +157,25 @@
             box-shadow: none;
         }
 
-        .size-indicator {
+        .refresh-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-header {
             text-align: center;
             margin-bottom: 20px;
             padding: 15px;
@@ -191,18 +185,9 @@
             font-weight: 600;
         }
 
-        .size-indicator h3 {
+        .table-header h3 {
             margin: 0;
             font-size: 1.3rem;
-        }
-
-        .comparison-table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
-            overflow-x: auto; /* Para tablas grandes */
         }
 
         .comparison-table {
@@ -244,168 +229,177 @@
             font-size: 1.1rem;
         }
 
-        .refresh-btn {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            margin-left: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .status-section {
+        @media (max-width: 1200px) {
+            .tables-container {
                 grid-template-columns: 1fr;
             }
             
-            .control-group {
-                flex-direction: column;
-                align-items: stretch;
+            .status-section {
+                grid-template-columns: 1fr;
             }
+        }
+
+        .summary-stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-stats h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .summary-stats p {
+            margin: 5px 0;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Comparador de Estadísticas de Escenarios</h1>
-            <p>Análisis estadístico automático desde repositorio GitHub - Original, Factor de Corrección + Original, y FC + Función</p>
+            <h1>Comparador VP por Escenarios</h1>
+            <p>Análisis comparativo de Valor Presente (vp10_25) por GAD - Original vs FC+Original vs FC+Función</p>
         </div>
 
         <div class="status-section">
             <div class="scenario" id="scenario-original">
                 <h3>📊 Escenario 1: Original</h3>
                 <div class="file-status" id="status-original-244">
-                    📂 BDD 244 filas: Cargando...
-                </div>
-                <div class="file-status" id="status-original-3172">
-                    📂 BDD 3172 filas: Cargando...
+                    📂 Data VP Original (244): Cargando...
                 </div>
             </div>
 
             <div class="scenario" id="scenario-fc-original">
-                <h3>🔧 Escenario 2: Factor de Corrección + Original</h3>
+                <h3>🔧 Escenario 2: FC + Original</h3>
                 <div class="file-status" id="status-fc-original-244">
-                    📂 BDD 244 filas: Cargando...
-                </div>
-                <div class="file-status" id="status-fc-original-3172">
-                    📂 BDD 3172 filas: Cargando...
+                    📂 Data VP FC Original (244): Cargando...
                 </div>
             </div>
 
             <div class="scenario" id="scenario-fc-function">
                 <h3>⚡ Escenario 3: FC + Función</h3>
                 <div class="file-status" id="status-fc-function-244">
-                    📂 BDD 244 filas: Cargando...
-                </div>
-                <div class="file-status" id="status-fc-function-3172">
-                    📂 BDD 3172 filas: Cargando...
+                    📂 Data VP FC Función (244): Cargando...
                 </div>
             </div>
         </div>
 
         <div class="controls">
             <h3>🎛️ Controles de Visualización</h3>
-            <div class="control-group">
-                <select id="datasetSize">
-                    <option value="244">Archivos de 244 filas</option>
-                    <option value="3172">Archivos de 3172 filas</option>
-                </select>
-                <select id="gadSelect">
-                    <option value="">Selecciona un GAD para filtrar</option>
-                    </select>
-                <select id="variableSelect" multiple size="5">
-                    </select>
-                <button id="generateComparison" disabled>Generar Comparación de Tablas</button>
-                <button id="refreshData" class="refresh-btn">🔄 Recargar Datos</button>
-            </div>
+            <button id="generateComparison" disabled>Generar Tablas Comparativas</button>
+            <button id="refreshData" class="refresh-btn">🔄 Recargar Datos</button>
         </div>
 
         <div id="visualizationArea" class="hidden">
-            <div class="size-indicator">
-                <h3 id="currentDatasetTitle">Análisis Estadístico - Archivos de 244 filas</h3>
-            </div>
-
-            <div class="comparison-table-container">
-                <h3>📊 Tabla Comparativa por Escenario y GAD</h3>
-                <div id="comparisonTable">
+            <div class="tables-container">
+                <div class="table-section">
+                    <div class="table-header">
+                        <h3>📈 Datos VP Original (244 filas)</h3>
                     </div>
+                    <div id="table244Container">
+                        <div class="loading-indicator">Generando tabla...</div>
+                    </div>
+                    <div id="summary244" class="summary-stats hidden">
+                        <h4>📊 Estadísticas Resumen</h4>
+                        <div id="stats244Content"></div>
+                    </div>
+                </div>
+
+                <div class="table-section">
+                    <div class="table-header">
+                        <h3>📈 Datos Gastos (3172 filas)</h3>
+                    </div>
+                    <div id="table3172Container">
+                        <div class="loading-indicator">Generando tabla...</div>
+                    </div>
+                    <div id="summary3172" class="summary-stats hidden">
+                        <h4>📊 Estadísticas Resumen</h4>
+                        <div id="stats3172Content"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuración de rutas de archivos en el repositorio - ACTUALIZADA
+        // Configuración de rutas de archivos VP
         const FILE_PATHS = {
             original: {
-                244: 'BDD/Escenario Original/Data_VP_Original.xlsx',
-                3172: 'BDD/Escenario Original/Data_Gastos_Original.xlsx' // CAMBIO AQUÍ
+                244: 'BDD/Escenario Original/Data_VP_Original.xlsx'
             },
             fc_original: {
-                244: 'BDD/Escenario FC + Original/Data_VP_FC_Original.xlsx',
-                3172: 'BDD/Escenario FC + Original/Data_Gastos_FC.xlsx' // CAMBIO AQUÍ
+                244: 'BDD/Escenario FC + Original/Data_VP_FC_Original.xlsx'
             },
             fc_function: {
-                244: 'BDD/Escenario FC + Funcion VP/Data_Valor_Presente_FC_Funcion.xlsx',
-                3172: 'BDD/Escenario FC + Funcion VP/Data_Gastos_FC_E3.xlsx' // CAMBIO AQUÍ
+                244: 'BDD/Escenario FC + Funcion VP/Data_Valor_Presente_FC_Funcion.xlsx'
             }
         };
 
-        // Variables globales para almacenar los datos
-        let dataStore = {
-            original: { 244: null, 3172: null },
-            fc_original: { 244: null, 3172: null },
-            fc_function: { 244: null, 3172: null }
+        // Configuración de rutas de archivos Gastos  
+        const GASTOS_PATHS = {
+            original: 'BDD/Escenario Original/Data_Gastos_Original.xlsx',
+            fc_original: 'BDD/Escenario FC + Original/Data_Gastos_FC.xlsx',
+            fc_function: 'BDD/Escenario FC + Funcion VP/Data_Gastos_FC_E3.xlsx'
         };
 
-        let availableVariables = new Set();
-        let availableGads = new Set();
+        // Variables globales para almacenar los datos
+        let vpDataStore = {
+            original: null,
+            fc_original: null,
+            fc_function: null
+        };
+
+        let gastosDataStore = {
+            original: null,
+            fc_original: null,
+            fc_function: null
+        };
 
         // Configurar event listeners
-        document.getElementById('generateComparison').addEventListener('click', generateComparativeTable);
-        document.getElementById('datasetSize').addEventListener('change', updateDatasetTitleAndGads);
+        document.getElementById('generateComparison').addEventListener('click', generateBothTables);
         document.getElementById('refreshData').addEventListener('click', loadAllData);
-        document.getElementById('gadSelect').addEventListener('change', checkIfReadyToGenerate);
-        document.getElementById('variableSelect').addEventListener('change', checkIfReadyToGenerate);
-
 
         // Cargar datos automáticamente al iniciar
         window.addEventListener('load', loadAllData);
 
         async function loadAllData() {
-            console.log('Iniciando carga de datos...');
+            console.log('Iniciando carga de datos VP y Gastos...');
             
-            // Resetear estado
-            availableVariables.clear();
-            availableGads.clear();
             updateAllScenariosStatus('loading');
             document.getElementById('generateComparison').disabled = true;
-            document.getElementById('visualizationArea').classList.add('hidden'); // Ocultar el área de visualización al recargar
+            document.getElementById('visualizationArea').classList.add('hidden');
 
             const loadPromises = [];
             
-            // Cargar todos los archivos
+            // Cargar archivos VP (244 filas)
             for (const [scenario, files] of Object.entries(FILE_PATHS)) {
-                for (const [size, path] of Object.entries(files)) {
-                    loadPromises.push(loadFile(scenario, size, path));
-                }
+                loadPromises.push(loadVPFile(scenario, files[244]));
+            }
+            
+            // Cargar archivos Gastos (3172 filas)
+            for (const [scenario, path] of Object.entries(GASTOS_PATHS)) {
+                loadPromises.push(loadGastosFile(scenario, path));
             }
             
             // Esperar a que todos los archivos se carguen
             await Promise.allSettled(loadPromises);
             
-            // Actualizar interfaz
-            updateVariableSelect();
-            updateDatasetTitleAndGads(); // Llama a esta función para cargar los GADs iniciales
+            // Verificar si se puede generar
             checkIfReadyToGenerate();
         }
 
-        async function loadFile(scenario, size, path) {
-            const statusId = `status-${scenario.replace('_', '-')}-${size}`;
-            const statusElement = document.getElementById(statusId);
+        async function loadVPFile(scenario, path) {
+            const statusId = `status-${scenario.replace('_', '-')}-244`;
             
             try {
-                updateFileStatus(statusId, 'loading', `📂 BDD ${size} filas: Cargando...`);
+                updateFileStatus(statusId, 'loading', `📂 Data VP ${scenario} (244): Cargando...`);
                 
-                console.log(`Cargando: ${path}`);
+                console.log(`Cargando VP: ${path}`);
                 
-                // Intentar cargar el archivo desde GitHub Pages
                 const response = await fetch(path);
                 
                 if (!response.ok) {
@@ -415,28 +409,39 @@
                 const arrayBuffer = await response.arrayBuffer();
                 const data = readExcelFromBuffer(arrayBuffer);
                 
-                dataStore[scenario][size] = data;
+                vpDataStore[scenario] = data;
                 
-                // Actualizar variables y GADs disponibles
-                if (data.length > 0) {
-                    Object.keys(data[0]).forEach(key => availableVariables.add(key));
-                    data.forEach(row => {
-                        const gadValue = row.gad || row.GAD; // Check both 'gad' and 'GAD'
-                        if (gadValue !== undefined && gadValue !== null && gadValue.toString().trim() !== '') {
-                            availableGads.add(gadValue.toString().trim());
-                        }
-                    });
-                }
-                
-                updateFileStatus(statusId, 'loaded', `✅ BDD ${size} filas: ${data.length} registros cargados`);
+                updateFileStatus(statusId, 'loaded', `✅ Data VP ${scenario} (244): ${data.length} registros`);
                 updateScenarioStatus(scenario, 'loaded');
                 
-                console.log(`✅ Cargado exitosamente: ${path} (${data.length} registros)`);
+                console.log(`✅ VP cargado: ${path} (${data.length} registros)`);
                 
             } catch (error) {
-                console.error(`❌ Error cargando ${path}:`, error);
-                updateFileStatus(statusId, 'error', `❌ BDD ${size} filas: Error - ${error.message}`);
+                console.error(`❌ Error cargando VP ${path}:`, error);
+                updateFileStatus(statusId, 'error', `❌ Data VP ${scenario} (244): Error - ${error.message}`);
                 updateScenarioStatus(scenario, 'error');
+            }
+        }
+
+        async function loadGastosFile(scenario, path) {
+            try {
+                console.log(`Cargando Gastos: ${path}`);
+                
+                const response = await fetch(path);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                const data = readExcelFromBuffer(arrayBuffer);
+                
+                gastosDataStore[scenario] = data;
+                
+                console.log(`✅ Gastos cargado: ${path} (${data.length} registros)`);
+                
+            } catch (error) {
+                console.error(`❌ Error cargando Gastos ${path}:`, error);
             }
         }
 
@@ -472,155 +477,145 @@
             });
         }
 
-        function updateVariableSelect() {
-            const select = document.getElementById('variableSelect');
-            select.innerHTML = ''; // Clear previous options
-            
-            // Filter out internal/unnecessary variables and 'gad' itself
-            const filteredVariables = Array.from(availableVariables).filter(variable => 
-                variable.toLowerCase() !== '__rownum__' && 
-                variable.toLowerCase() !== 'gad' &&
-                variable.toLowerCase() !== 'id_gad' &&
-                !variable.startsWith('__') && 
-                !variable.startsWith('!') 
-            ).sort(); // Sort variables alphabetically
-
-            if (filteredVariables.length === 0) {
-                 const option = document.createElement('option');
-                 option.value = "";
-                 option.textContent = "No hay variables disponibles";
-                 select.appendChild(option);
-                 select.disabled = true;
-            } else {
-                select.disabled = false;
-                filteredVariables.forEach(variable => {
-                    const option = document.createElement('option');
-                    option.value = variable;
-                    option.textContent = variable;
-                    select.appendChild(option);
-                });
-            }
-            console.log(`Variables disponibles para selección: ${filteredVariables.join(', ')}`);
-        }
-
-        function updateGadSelect(datasetSize) {
-            const select = document.getElementById('gadSelect');
-            select.innerHTML = '<option value="">Selecciona un GAD para filtrar</option>'; // Default option
-
-            let gadsForCurrentSize = new Set();
-            ['original', 'fc_original', 'fc_function'].forEach(scenario => {
-                const data = dataStore[scenario][datasetSize];
-                if (data) {
-                    data.forEach(row => {
-                        const gadValue = row.gad || row.GAD; // Check both 'gad' and 'GAD'
-                        if (gadValue !== undefined && gadValue !== null && gadValue.toString().trim() !== '') {
-                            gadsForCurrentSize.add(gadValue.toString().trim());
-                        }
-                    });
-                }
-            });
-
-            const sortedGads = Array.from(gadsForCurrentSize).sort();
-            sortedGads.forEach(gad => {
-                const option = document.createElement('option');
-                option.value = gad;
-                option.textContent = gad;
-                select.appendChild(option);
-            });
-            console.log(`GADs disponibles para el tamaño ${datasetSize}: ${sortedGads.join(', ')}`);
-        }
-
-        function updateDatasetTitleAndGads() {
-            const size = document.getElementById('datasetSize').value;
-            const title = document.getElementById('currentDatasetTitle');
-            title.textContent = `Comparación - Archivos de ${size} filas`;
-            updateGadSelect(size); // Update GADs when dataset size changes
-            checkIfReadyToGenerate();
-        }
-
         function checkIfReadyToGenerate() {
-            const selectedGad = document.getElementById('gadSelect').value;
-            // Get all selected options from the multiple select
-            const selectedVariables = Array.from(document.getElementById('variableSelect').selectedOptions).map(option => option.value);
-            const hasAnyDataLoaded = Object.values(dataStore).some(scenario => Object.values(scenario).some(data => data !== null && data.length > 0));
+            const hasVPData = Object.values(vpDataStore).some(data => data !== null && data.length > 0);
+            const hasGastosData = Object.values(gastosDataStore).some(data => data !== null && data.length > 0);
 
             const button = document.getElementById('generateComparison');
-            // Button is enabled if data is loaded, a GAD is selected, AND at least one variable is selected
-            button.disabled = !hasAnyDataLoaded || !selectedGad || selectedVariables.length === 0;
+            button.disabled = !hasVPData || !hasGastosData;
             
             if (button.disabled) {
-                console.log('Botón de generación deshabilitado: No hay datos cargados, o GAD no seleccionado, o ninguna variable seleccionada.');
+                console.log('Botón deshabilitado: Faltan datos VP o Gastos');
             } else {
-                console.log('✅ Datos, GAD y variables listos para generar la tabla comparativa.');
+                console.log('✅ Datos listos para generar tablas comparativas');
             }
         }
 
-        function generateComparativeTable() {
-            const selectedGad = document.getElementById('gadSelect').value;
-            // Get all selected options from the multiple select
-            const selectedVariables = Array.from(document.getElementById('variableSelect').selectedOptions).map(option => option.value);
-            const datasetSize = document.getElementById('datasetSize').value;
-            const tableContainer = document.getElementById('comparisonTable');
-            tableContainer.innerHTML = ''; // Clear previous table
-
-            if (!selectedGad || selectedVariables.length === 0) {
-                alert('Por favor selecciona un GAD y al menos una variable para comparar.');
-                return;
-            }
-
-            console.log(`Generando tabla comparativa para GAD: ${selectedGad}, Variables: ${selectedVariables.join(', ')}, Tamaño: ${datasetSize}`);
-
+        function generateBothTables() {
+            console.log('Generando ambas tablas comparativas...');
+            
             // Mostrar área de visualización
             document.getElementById('visualizationArea').classList.remove('hidden');
+            
+            // Generar tabla VP (244 filas)
+            generateTable('244', vpDataStore, 'table244Container', 'summary244', 'stats244Content');
+            
+            // Generar tabla Gastos (3172 filas) 
+            generateTable('3172', gastosDataStore, 'table3172Container', 'summary3172', 'stats3172Content');
+        }
+
+        function generateTable(datasetType, dataStore, containerId, summaryId, statsId) {
+            const tableContainer = document.getElementById(containerId);
+            tableContainer.innerHTML = '';
 
             const table = document.createElement('table');
             table.classList.add('comparison-table');
 
-            // Create table header
+            // Crear encabezado
             const thead = table.createTHead();
             const headerRow = thead.insertRow();
-            headerRow.insertCell().textContent = 'Escenario';
-            selectedVariables.forEach(variable => {
-                const th = document.createElement('th');
-                th.textContent = variable;
-                headerRow.appendChild(th);
-            });
+            headerRow.insertCell().textContent = 'GAD';
+            headerRow.insertCell().textContent = 'Original';
+            headerRow.insertCell().textContent = 'FC + Original';
+            headerRow.insertCell().textContent = 'FC + Función';
 
-            // Create table body
+            // Crear cuerpo de la tabla
             const tbody = table.createTBody();
             const scenarios = ['original', 'fc_original', 'fc_function'];
-            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
-
-            scenarios.forEach((scenarioKey, index) => {
-                const data = dataStore[scenarioKey][datasetSize];
-                const row = tbody.insertRow();
-                row.insertCell().textContent = scenarioNames[index]; // First cell for Scenario Name
-
+            
+            // Obtener todos los GADs únicos
+            let allGads = new Set();
+            scenarios.forEach(scenario => {
+                const data = dataStore[scenario];
                 if (data && data.length > 0) {
-                    // Find the row corresponding to the selected GAD
-                    const gadData = data.find(row => {
-                        const gadValue = row.gad || row.GAD; // Check both 'gad' and 'GAD'
-                        return gadValue?.toString().trim() === selectedGad;
-                    });
-
-                    selectedVariables.forEach(variable => {
-                        const cell = row.insertCell();
-                        if (gadData && gadData.hasOwnProperty(variable) && gadData[variable] !== null && gadData[variable] !== undefined) {
-                            // Format numbers to 2 decimal places if they are numeric
-                            const value = parseFloat(gadData[variable]);
-                            cell.textContent = isNaN(value) ? gadData[variable] : value.toFixed(2);
-                        } else {
-                            cell.textContent = 'N/A'; // Not available or not found for this GAD
+                    data.forEach(row => {
+                        const gadValue = row.gad || row.GAD;
+                        if (gadValue !== undefined && gadValue !== null && gadValue.toString().trim() !== '') {
+                            allGads.add(gadValue.toString().trim());
                         }
-                    });
-                } else {
-                    selectedVariables.forEach(() => {
-                        const cell = row.insertCell();
-                        cell.textContent = 'No hay datos cargados';
                     });
                 }
             });
+
+            const sortedGads = Array.from(allGads).sort();
+            
+            // Estadísticas para el resumen
+            let stats = {
+                original: { total: 0, count: 0, min: Infinity, max: -Infinity },
+                fc_original: { total: 0, count: 0, min: Infinity, max: -Infinity },
+                fc_function: { total: 0, count: 0, min: Infinity, max: -Infinity }
+            };
+
+            // Crear filas para cada GAD
+            sortedGads.forEach(gad => {
+                const row = tbody.insertRow();
+                row.insertCell().textContent = gad;
+
+                scenarios.forEach(scenario => {
+                    const cell = row.insertCell();
+                    const data = dataStore[scenario];
+                    
+                    if (data && data.length > 0) {
+                        const gadData = data.find(row => {
+                            const gadValue = row.gad || row.GAD;
+                            return gadValue?.toString().trim() === gad;
+                        });
+
+                        if (gadData && gadData.hasOwnProperty('vp10_25') && gadData['vp10_25'] !== null && gadData['vp10_25'] !== undefined) {
+                            const value = parseFloat(gadData['vp10_25']);
+                            if (!isNaN(value)) {
+                                cell.textContent = value.toLocaleString('es-ES', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                });
+                                
+                                // Actualizar estadísticas
+                                stats[scenario].total += value;
+                                stats[scenario].count += 1;
+                                stats[scenario].min = Math.min(stats[scenario].min, value);
+                                stats[scenario].max = Math.max(stats[scenario].max, value);
+                            } else {
+                                cell.textContent = 'N/A';
+                            }
+                        } else {
+                            cell.textContent = 'N/A';
+                        }
+                    } else {
+                        cell.textContent = 'Sin datos';
+                    }
+                });
+            });
+
             tableContainer.appendChild(table);
+            
+            // Mostrar estadísticas resumen
+            generateSummaryStats(stats, summaryId, statsId);
+        }
+
+        function generateSummaryStats(stats, summaryId, statsId) {
+            const summaryDiv = document.getElementById(summaryId);
+            const statsContent = document.getElementById(statsId);
+            
+            let statsHtml = '';
+            const scenarios = ['original', 'fc_original', 'fc_function'];
+            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
+            
+            scenarios.forEach((scenario, index) => {
+                const stat = stats[scenario];
+                if (stat.count > 0) {
+                    const avg = stat.total / stat.count;
+                    statsHtml += `
+                        <p><strong>${scenarioNames[index]}:</strong> 
+                        Promedio: ${avg.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, 
+                        Mín: ${stat.min.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, 
+                        Máx: ${stat.max.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, 
+                        Total GADs: ${stat.count}</p>
+                    `;
+                }
+            });
+            
+            statsContent.innerHTML = statsHtml;
+            summaryDiv.classList.remove('hidden');
         }
     </script>
 </body>
