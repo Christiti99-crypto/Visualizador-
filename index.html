@@ -669,10 +669,9 @@
             const table = document.createElement('table');
             table.classList.add('comparison-table');
 
-            // Variables a mostrar para gastos
-            const gastosVariables = ['anho', 'ing_pred2', 'g1_pred', 'g2_pred'];
+            // Variables a mostrar para gastos (sin incluir 'anho' como variable)
+            const gastosVariables = ['ing_pred2', 'g1_pred', 'g2_pred'];
             const variableNames = {
-                'anho': 'Año',
                 'ing_pred2': 'Ing. Pred. 2',
                 'g1_pred': 'G1 Pred.',
                 'g2_pred': 'G2 Pred.'
@@ -737,7 +736,7 @@
                     yearCell.style.textAlign = 'center';
                     yearCell.style.padding = '15px';
 
-                    // Crear filas para cada variable de gastos
+                    // Crear filas para cada variable de gastos (SIN incluir 'anho')
                     gastosVariables.forEach(variable => {
                         const row = tbody.insertRow();
                         const varCell = row.insertCell();
