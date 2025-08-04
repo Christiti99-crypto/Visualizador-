@@ -51,10 +51,7 @@
         }
 
         .status-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            display: none; /* Ocultar sección de estado */
         }
 
         .scenario {
@@ -195,6 +192,29 @@
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-gastos-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .table-gastos-container .comparison-table {
+            margin-top: 0;
+        }
+
+        .table-gastos-container .comparison-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table-gastos-container .comparison-table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .table-header {
@@ -370,7 +390,7 @@
                     <div class="table-header">
                         <h3>📊 Comparación Gastos por GAD y Año</h3>
                     </div>
-                    <div id="tableGastosContainer">
+                    <div class="table-gastos-container" id="tableGastosContainer">
                         <div class="loading-indicator">Generando tabla...</div>
                     </div>
                     <div id="summaryGastos" class="summary-stats hidden">
