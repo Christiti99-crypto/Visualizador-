@@ -212,9 +212,22 @@
         }
 
         .table-gastos-container .comparison-table th {
-            background-color: #f8f9fa;
+            background-color: #f8f9fa !important;
             border-bottom: 2px solid #dee2e6;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            opacity: 1;
+            position: relative;
+        }
+
+        .table-gastos-container .comparison-table th::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #f8f9fa;
+            z-index: -1;
         }
 
         .table-header {
