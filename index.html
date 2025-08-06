@@ -406,17 +406,17 @@
     </div>
 
     <script>
-        // Configuración de rutas de archivos
+        // Configuración de rutas de archivos - ACTUALIZADA SEGÚN REQUERIMIENTOS
         const FILE_PATHS = {
             vp: {
                 original: 'BDD/Escenario Original/Data_VP_Original.xlsx',
-                fc_original: 'BDD/Escenario FC + Original/Data_VP_FC_Original.xlsx',
-                fc_function: 'BDD/Escenario FC + Funcion VP/Data_Valor_Presente_FC_Funcion.xlsx'
+                fc_original: 'BDD/2) Escenario FC + Original/Data_Valor_Presente_Escenario2.xlsx',
+                fc_function: 'BDD/3) FC + Funcion Cupos/Data_Valor_Presente_Escenario3.xlsx'
             },
             gastos: {
                 original: 'BDD/Escenario Original/Data_Gastos_Original.xlsx',
-                fc_original: 'BDD/Escenario FC + Original/Data_Gastos_FC.xlsx',
-                fc_function: 'BDD/Escenario FC + Funcion VP/Data_Gastos_FC_E3.xlsx'
+                fc_original: 'BDD/2) Escenario FC + Original/Data_VP_Larga_Escenario2.xlsx',
+                fc_function: 'BDD/3) FC + Funcion Cupos/Data_VP_Larga_Escenario3.xlsx'
             }
         };
 
@@ -615,6 +615,47 @@
             // Crear cuerpo de la tabla
             const tbody = table.createTBody();
             const scenarios = ['original', 'fc_original', 'fc_function'];
+            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
+            
+            scenarios.forEach((scenario, index) => {
+                const value = stats[scenario];
+                if (value !== null && value !== undefined) {
+                    statsHtml += `
+                        <p><strong>${scenarioNames[index]}:</strong> 
+                        ${value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    `;
+                } else {
+                    statsHtml += `
+                        <p><strong>${scenarioNames[index]}:</strong> Sin datos</p>
+                    `;
+                }
+            });
+            
+            statsContent.innerHTML = statsHtml;
+            summaryDiv.classList.remove('hidden');
+        }
+
+        function generateGastosSummaryStats(gadDataByScenario, sortedYears) {
+            const summaryDiv = document.getElementById('summaryGastos');
+            const statsContent = document.getElementById('statsGastosContent');
+            
+            let statsHtml = `<p><strong>GAD analizado:</strong> ${document.getElementById('gadSelect').value}</p>`;
+            statsHtml += `<p><strong>Años disponibles:</strong> ${sortedYears.join(', ')}</p>`;
+            
+            const scenarios = ['original', 'fc_original', 'fc_function'];
+            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
+            
+            scenarios.forEach((scenario, index) => {
+                const dataCount = gadDataByScenario[scenario] ? gadDataByScenario[scenario].length : 0;
+                statsHtml += `<p><strong>${scenarioNames[index]}:</strong> ${dataCount} registros</p>`;
+            });
+            
+            statsContent.innerHTML = statsHtml;
+            summaryDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>_function'];
             
             const row = tbody.insertRow();
             const gadCell = row.insertCell();
@@ -779,45 +820,4 @@
             const statsContent = document.getElementById('statsVPContent');
             
             let statsHtml = '';
-            const scenarios = ['original', 'fc_original', 'fc_function'];
-            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
-            
-            scenarios.forEach((scenario, index) => {
-                const value = stats[scenario];
-                if (value !== null && value !== undefined) {
-                    statsHtml += `
-                        <p><strong>${scenarioNames[index]}:</strong> 
-                        ${value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    `;
-                } else {
-                    statsHtml += `
-                        <p><strong>${scenarioNames[index]}:</strong> Sin datos</p>
-                    `;
-                }
-            });
-            
-            statsContent.innerHTML = statsHtml;
-            summaryDiv.classList.remove('hidden');
-        }
-
-        function generateGastosSummaryStats(gadDataByScenario, sortedYears) {
-            const summaryDiv = document.getElementById('summaryGastos');
-            const statsContent = document.getElementById('statsGastosContent');
-            
-            let statsHtml = `<p><strong>GAD analizado:</strong> ${document.getElementById('gadSelect').value}</p>`;
-            statsHtml += `<p><strong>Años disponibles:</strong> ${sortedYears.join(', ')}</p>`;
-            
-            const scenarios = ['original', 'fc_original', 'fc_function'];
-            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
-            
-            scenarios.forEach((scenario, index) => {
-                const dataCount = gadDataByScenario[scenario] ? gadDataByScenario[scenario].length : 0;
-                statsHtml += `<p><strong>${scenarioNames[index]}:</strong> ${dataCount} registros</p>`;
-            });
-            
-            statsContent.innerHTML = statsHtml;
-            summaryDiv.classList.remove('hidden');
-        }
-    </script>
-</body>
-</html>
+            const scenarios = ['original', 'fc_original', 'fc
