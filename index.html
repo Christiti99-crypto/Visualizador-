@@ -344,7 +344,7 @@
             </div>
 
             <div class="scenario" id="scenario-fc-original">
-                <h3>🔧 Escenario 2: FC + Sin Cresta + Cupos Bucle (vp10_25)</h3>
+                <h3>🔧 Escenario 2: FC + Original</h3>
                 <div class="file-status" id="status-fc-original-vp">
                     📂 Data VP FC Original (244): Cargando...
                 </div>
@@ -354,7 +354,7 @@
             </div>
 
             <div class="scenario" id="scenario-fc-function">
-                <h3>⚡ Escenario 3: FC + Con Cresta + Cupos Bucle (vp10_25)</h3>
+                <h3>⚡ Escenario 3: FC + Función</h3>
                 <div class="file-status" id="status-fc-function-vp">
                     📂 Data VP FC Función (244): Cargando...
                 </div>
@@ -410,12 +410,12 @@
         const FILE_PATHS = {
             vp: {
                 original: 'BDD/Escenario Original/Data_VP_Original.xlsx',
-                fc_original: 'BDD/2) Escenario FC + Sin Cresta + Cupos Bucle/Data_Valor_Presente_Escenario2.xlsx',
+                fc_original: 'BDD/2) Escenario FC + Original/Data_Valor_Presente_Escenario2.xlsx',
                 fc_function: 'BDD/3) FC + Funcion Cupos/Data_Valor_Presente_Escenario3.xlsx'
             },
             gastos: {
                 original: 'BDD/Escenario Original/Data_Gastos_Original.xlsx',
-                fc_original: 'BDD/2) Escenario FC + Sin Cresta + Cupos Bucle/Data_VP_Larga_Escenario2.xlsx',
+                fc_original: 'BDD/2) Escenario FC + Original/Data_VP_Larga_Escenario2.xlsx',
                 fc_function: 'BDD/3) FC + Funcion Cupos/Data_VP_Larga_Escenario3.xlsx'
             }
         };
@@ -609,8 +609,8 @@
             const headerRow = thead.insertRow();
             headerRow.insertCell().textContent = 'GAD';
             headerRow.insertCell().textContent = 'Original (vp10_25)';
-            headerRow.insertCell().textContent = 'FC + Sin Cresta + Cupos Bucle (vp10_25)';
-            headerRow.insertCell().textContent = 'FC + Con Cresta + Cupos Bucle (vp10_25)';
+            headerRow.insertCell().textContent = 'FC + Original (vp10_25)';
+            headerRow.insertCell().textContent = 'FC + Función (vp10_25)';
 
             // Crear cuerpo de la tabla
             const tbody = table.createTBody();
@@ -692,8 +692,8 @@
             const headerRow = thead.insertRow();
             headerRow.insertCell().textContent = 'Variable';
             headerRow.insertCell().textContent = 'Original';
-            headerRow.insertCell().textContent = 'FC + Sin Cresta + Cupos Bucle';
-            headerRow.insertCell().textContent = 'FC + Con Cresta + Cupos Bucle';
+            headerRow.insertCell().textContent = 'FC + Original';
+            headerRow.insertCell().textContent = 'FC + Función';
 
             // Crear cuerpo de la tabla
             const tbody = table.createTBody();
@@ -825,7 +825,7 @@
             
             let statsHtml = '';
             const scenarios = ['original', 'fc_original', 'fc_function'];
-            const scenarioNames = ['Original', 'FC + Sin Cresta + Cupos Bucle', 'FC + Con Cresta + Cupos Bucle'];
+            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
             
             scenarios.forEach((scenario, index) => {
                 const value = stats[scenario];
@@ -853,7 +853,7 @@
             statsHtml += `<p><strong>Años disponibles:</strong> ${sortedYears.join(', ')}</p>`;
             
             const scenarios = ['original', 'fc_original', 'fc_function'];
-            const scenarioNames = ['Original', 'FC + Sin Cresta + Cupos Bucle', 'FC + Con Cresta + Cupos Bucle'];
+            const scenarioNames = ['Original', 'FC + Original', 'FC + Función'];
             
             scenarios.forEach((scenario, index) => {
                 const dataCount = gadDataByScenario[scenario] ? gadDataByScenario[scenario].length : 0;
