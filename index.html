@@ -669,9 +669,19 @@
             const table = document.createElement('table');
             table.classList.add('comparison-table');
 
+            // Función para obtener el nombre correcto de la variable ing_pred según el escenario
+            function getIngPredVariable(scenario) {
+                if (scenario === 'original') {
+                    return 'ing_pred2'; // En el escenario original se llama ing_pred2
+                } else {
+                    return 'ing_pred';  // En los escenarios FC se llama ing_pred
+                }
+            }
+
             // Variables a mostrar para gastos (sin incluir 'anho' como variable)
-            const gastosVariables = ['ing_pred2', 'g1_pred', 'g2_pred'];
+            const gastosVariables = ['g1_pred', 'g2_pred'];
             const variableNames = {
+                'ing_pred': 'Ing. Pred.',
                 'ing_pred2': 'Ing. Pred. 2',
                 'g1_pred': 'G1 Pred.',
                 'g2_pred': 'G2 Pred.'
@@ -736,7 +746,38 @@
                     yearCell.style.textAlign = 'center';
                     yearCell.style.padding = '15px';
 
-                    // Crear filas para cada variable de gastos (SIN incluir 'anho')
+                    // PRIMERO: Crear fila para ing_pred/ing_pred2
+                    const ingRow = tbody.insertRow();
+                    const ingCell = ingRow.insertCell();
+                    ingCell.textContent = 'Ing. Pred.';
+                    ingCell.style.fontWeight = '600';
+                    ingCell.style.backgroundColor = '#f5f5f5';
+
+                    scenarios.forEach(scenario => {
+                        const cell = ingRow.insertCell();
+                        const yearData = gadDataByScenario[scenario].find(row => 
+                            row.anho?.toString() === year
+                        );
+
+                        // Usar la variable correcta según el escenario
+                        const ingVariable = getIngPredVariable(scenario);
+                        
+                        if (yearData && yearData.hasOwnProperty(ingVariable) && yearData[ingVariable] !== null && yearData[ingVariable] !== undefined) {
+                            const value = parseFloat(yearData[ingVariable]);
+                            if (!isNaN(value)) {
+                                cell.textContent = value.toLocaleString('es-ES', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                });
+                            } else {
+                                cell.textContent = yearData[ingVariable];
+                            }
+                        } else {
+                            cell.textContent = 'N/A';
+                        }
+                    });
+
+                    // LUEGO: Crear filas para las demás variables de gastos
                     gastosVariables.forEach(variable => {
                         const row = tbody.insertRow();
                         const varCell = row.insertCell();
