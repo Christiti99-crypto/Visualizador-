@@ -713,19 +713,23 @@
                 }
             });
 
-            // Obtener todos los años únicos para el GAD seleccionado
+            // Obtener todos los años únicos para el GAD seleccionado (filtrar solo años 24-34)
             let allYears = new Set();
             scenarios.forEach(scenario => {
                 if (gadDataByScenario[scenario]) {
                     gadDataByScenario[scenario].forEach(row => {
                         if (row.anho !== undefined && row.anho !== null) {
-                            allYears.add(row.anho.toString());
+                            const year = parseInt(row.anho);
+                            // Solo incluir años del 24 al 34 (inclusive)
+                            if (!isNaN(year) && year >= 24 && year <= 34) {
+                                allYears.add(year);
+                            }
                         }
                     });
                 }
             });
 
-            const sortedYears = Array.from(allYears).sort();
+            const sortedYears = Array.from(allYears).sort((a, b) => a - b);
 
             if (sortedYears.length === 0) {
                 const noDataRow = tbody.insertRow();
@@ -756,7 +760,7 @@
                     scenarios.forEach(scenario => {
                         const cell = ingRow.insertCell();
                         const yearData = gadDataByScenario[scenario].find(row => 
-                            row.anho?.toString() === year
+                            parseInt(row.anho) === year
                         );
 
                         // Usar la variable correcta según el escenario
@@ -788,7 +792,7 @@
                         scenarios.forEach(scenario => {
                             const cell = row.insertCell();
                             const yearData = gadDataByScenario[scenario].find(row => 
-                                row.anho?.toString() === year
+                                parseInt(row.anho) === year
                             );
 
                             if (yearData && yearData.hasOwnProperty(variable) && yearData[variable] !== null && yearData[variable] !== undefined) {
